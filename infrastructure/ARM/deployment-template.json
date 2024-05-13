@@ -54,6 +54,13 @@
         "description": "Set to true to use an existing search service, false to create a new one."
       }
     },
+    "existingSearchServiceResourceGroupName": {
+      "type": "string",
+      "defaultValue": "default-resource-group-name",
+      "metadata": {
+        "description": "The name of the existing resource group for the Azure Search service if using an existing service."
+      }
+    },
     "applicationInsightsName": {
       "defaultValue": "[concat('csci', substring(uniqueString(resourceGroup().id),0,6))]",
       "type": "String"
@@ -550,33 +557,33 @@
           }
       },
       {
-          "type": "Microsoft.Search/searchServices",
-          "apiVersion": "2021-04-01-preview",
-          "name": "[parameters('searchServicesName')]",
-          "location": "[parameters('location')]",
-          "condition": "[not(parameters('useExistingSearchService'))]",
-          "sku": {
-            "name": "[parameters('searchServiceSku')]"
+        "type": "Microsoft.Search/searchServices",
+        "apiVersion": "2021-04-01-preview",
+        "name": "[parameters('searchServicesName')]",
+        "location": "[parameters('location')]",
+        "condition": "[and(not(parameters('useExistingSearchService')), equals(parameters('newOrExistingOpenAIResource'), 'new'))]",
+        "sku": {
+          "name": "[parameters('searchServiceSku')]"
+        },
+        "properties": {
+          "replicaCount": 1,
+          "partitionCount": 1,
+          "hostingMode": "Default",
+          "publicNetworkAccess": "Enabled",
+          "networkRuleSet": {
+            "ipRules": [],
+            "bypass": "None"
           },
-          "properties": {
-              "replicaCount": 1,
-              "partitionCount": 1,
-              "hostingMode": "Default",
-              "publicNetworkAccess": "Enabled",
-              "networkRuleSet": {
-                  "ipRules": [],
-                  "bypass": "None"
-              },
-              "encryptionWithCmk": {
-                  "enforcement": "Unspecified"
-              },
-              "disableLocalAuth": false,
-              "authOptions": {
-                  "apiKeyOnly": {}
-              },
-              "disabledDataExfiltrationOptions": [],
-              "semanticSearch": "disabled"
-          }
+          "encryptionWithCmk": {
+            "enforcement": "Unspecified"
+          },
+          "disableLocalAuth": false,
+          "authOptions": {
+            "apiKeyOnly": {}
+          },
+          "disabledDataExfiltrationOptions": [],
+          "semanticSearch": "disabled"
+        }
       },
       {
           "type": "Microsoft.Storage/storageAccounts",
