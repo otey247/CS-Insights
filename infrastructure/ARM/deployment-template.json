@@ -34,32 +34,7 @@
     },
     "searchServicesName": {
       "defaultValue": "[concat('csci', substring(uniqueString(resourceGroup().id),0,6))]",
-      "type": "String",
-      "metadata": {
-        "description": "The name of the Azure Search service."
-      }
-    },
-    "searchServiceSku": {
-      "type": "string",
-      "defaultValue": "basic",
-      "allowedValues": ["free", "basic", "standard"],
-      "metadata": {
-        "description": "The pricing tier of the Azure Search service."
-      }
-    },
-    "useExistingSearchService": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Set to true to use an existing search service, false to create a new one."
-      }
-    },
-    "existingSearchServiceResourceGroupName": {
-      "type": "string",
-      "defaultValue": "default-resource-group-name",
-      "metadata": {
-        "description": "The name of the existing resource group for the Azure Search service if using an existing service."
-      }
+      "type": "String"
     },
     "applicationInsightsName": {
       "defaultValue": "[concat('csci', substring(uniqueString(resourceGroup().id),0,6))]",
@@ -557,33 +532,32 @@
           }
       },
       {
-        "type": "Microsoft.Search/searchServices",
-        "apiVersion": "2021-04-01-preview",
-        "name": "[parameters('searchServicesName')]",
-        "location": "[parameters('location')]",
-        "condition": "[and(not(parameters('useExistingSearchService')), equals(parameters('newOrExistingOpenAIResource'), 'new'))]",
-        "sku": {
-          "name": "[parameters('searchServiceSku')]"
-        },
-        "properties": {
-          "replicaCount": 1,
-          "partitionCount": 1,
-          "hostingMode": "Default",
-          "publicNetworkAccess": "Enabled",
-          "networkRuleSet": {
-            "ipRules": [],
-            "bypass": "None"
+          "type": "Microsoft.Search/searchServices",
+          "apiVersion": "2021-04-01-preview",
+          "name": "[parameters('searchServicesName')]",
+          "location": "[parameters('location')]",
+          "sku": {
+              "name": "standard"
           },
-          "encryptionWithCmk": {
-            "enforcement": "Unspecified"
-          },
-          "disableLocalAuth": false,
-          "authOptions": {
-            "apiKeyOnly": {}
-          },
-          "disabledDataExfiltrationOptions": [],
-          "semanticSearch": "disabled"
-        }
+          "properties": {
+              "replicaCount": 1,
+              "partitionCount": 1,
+              "hostingMode": "Default",
+              "publicNetworkAccess": "Enabled",
+              "networkRuleSet": {
+                  "ipRules": [],
+                  "bypass": "None"
+              },
+              "encryptionWithCmk": {
+                  "enforcement": "Unspecified"
+              },
+              "disableLocalAuth": false,
+              "authOptions": {
+                  "apiKeyOnly": {}
+              },
+              "disabledDataExfiltrationOptions": [],
+              "semanticSearch": "disabled"
+          }
       },
       {
           "type": "Microsoft.Storage/storageAccounts",
@@ -1058,3 +1032,4 @@
       }
   ]
 }
+
